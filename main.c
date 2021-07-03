@@ -12,6 +12,10 @@ typedef struct arvoreRB{
 	struct arvoreRB *dir;
 } ArvoreRB;
 
+ArvoreRB *rot_esq(ArvoreRB *no);
+ArvoreRB *rot_dir(ArvoreRB *no);
+ArvoreRB *flip_cor(ArvoreRB *no);
+
 bool eh_no_vermelho(ArvoreRB *no){
 	if(!no) return BLACK;
 	return (no->cor == RED);
@@ -109,12 +113,73 @@ bool check_arvore_RB(ArvoreRB *a){
 		check_in_ordem(a));
 }
 
-//ArvoreRB *arv_inserir(ArvoreRB *a, int v){	
-//}
+ArvoreRB *arv_inserir(ArvoreRB *a, int v){	
+	if(a == NULL){
+		a = (ArvoreRB *)malloc(sizeof(ArvoreRB));
+		a->info = v;
+		a->cor = RED;
+		a->esq = a->dir = NULL;
+	}
+	else if(v < a->info){
+		a->esq = arv_inserir(a->esq, v);
+	}
+	else{
+		a->dir = arv_inserir(a->esq, v);
+	}
+
+	//recolori 
+	if(a->esq->cor == BLACK && a->dir->cor == RED){
+		a = rot_esq(a);
+	}
+	else if(a->esq->cor == RED && a->esq->esq->cor == RED){
+		a = rot_dir(a);
+	}
+	else if(a->esq->cor == RED && a->dir->cor == RED){
+		a = flip_cor(a);
+	}
+
+	return a;
+}
+
+ArvoreRB *rot_esq(ArvoreRB *no){
+	ArvoreRB *aux = no->dir;
+	no->dir = aux->esq;
+	aux->esq = no;
+	aux->cor = no->cor;
+	aux->cor = RED;
+	return aux;
+}
+
+ArvoreRB *rot_dir(ArvoreRB *no){
+	ArvoreRB *aux = no->esq;
+	no->esq = aux->dir;
+	aux->dir = no;
+	aux->cor = no->cor;
+	no->cor = RED;
+	return aux;
+}
+
+
+ArvoreRB *flip_cor(ArvoreRB *no){
+	no->cor = RED;
+	no->esq->cor = BLACK;
+	no->dir->cor = BLACK;
+	return no;
+}
+
 
 void main(){
 	ArvoreRB *a;
 	
+	a = arv_inserir(NULL, 14);
+	a = arv_inserir(a, 5);
+	a = arv_inserir(a, 211);
+	a = arv_inserir(a, 121);
+	a = arv_inserir(a, 41);
+	a = arv_inserir(a, 1);
+	
+	in_order(a);
+	printf("eh arvoreRB %d\n", check_arvore_RB(a));
 	printf("aaa\n");
 }
 
