@@ -167,6 +167,45 @@ ArvoreRB *flip_cor(ArvoreRB *no){
 	return no;
 }
 
+ArvoreRB *remove(ArvoreRB *a, int dado){
+	ArvoreRB *aux;
+	int filhos = 0, tmp;
+
+	if(!a)
+		return NULL;
+	if(a->info < dado)
+		a->dir = remove(a->dir, dado);
+	else if(a->info > dado)
+		a->esq = remove(a->dir, dado);
+	else{
+		if(a->esq)
+			filhos++;
+		if(a->dir)
+			filhos++;
+
+		if(filhos == 0)a{
+			free(a);
+			return NULL;
+		}
+		else if(filhos == 1){
+			aux = a->esq ? a->esq : a->dir;
+			free(a);
+			aux->cor = BLACK;
+			return aux;
+		}
+		else {
+			aux = a->esq;
+			while(aux->dir)
+				aux = aux->dir;
+			tmp = a->info;
+			a->info = tmp;
+			a->esq = remove(a->esq, tmp);
+			
+			return aux;
+		}
+
+	}
+}
 
 void main(){
 	ArvoreRB *a;
